@@ -69,7 +69,7 @@ def valedate_user(name, password):
 
 def create_user(name, sex, birthday, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""INSERT into Users VALUES ('{name}, {sex}, {birthday}, {password}')""")
+    cur.execute(f"""INSERT into Users VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
     return {'id': user['id'], 'name':user['name'], 'success':True}
 
 def get_user_info ():
