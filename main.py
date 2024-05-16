@@ -28,11 +28,11 @@ def login():
 @cross_origin(origin='https://04b7-178-178-92-202.ngrok-free.app', headers=['Content-Type', 'Authorization'])
 def signup():
     print(request.json)
-    name = request.json['name']
+    namea = request.json['name']
     sex = request.json['sex']
     birthday = request.json['birthday']
     password = request.json['password']
-    response = jsonify(create_user(name,sex,birthday,password))
+    response = jsonify(create_user(namea,sex,birthday,password))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'POST'
@@ -41,4 +41,4 @@ def signup():
 
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

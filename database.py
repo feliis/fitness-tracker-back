@@ -61,7 +61,7 @@ def new_user(conn):
 def valedate_user(name, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(f"""SELECT * FROM Users where name='{name}' """)
-    print(user['password'])
+    user = cur.fetchone()
     if user and user['password'] == password:
         return {'id': user['id'], 'name':user['name'], 'success':True}
     else:
@@ -69,13 +69,22 @@ def valedate_user(name, password):
 
 def create_user(name, sex, birthday, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""INSERT into Users VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
-    return {'id': user['id'], 'name':user['name'], 'success':True}
+    cur.execute(f"""SELECT * FROM Users where name='{name}' """)
+    user = cur.fetchone()
+    if user:
+        return {'success':False}
+    else :
+        cur.execute(
+            f"""INSERT into Users (name, sex, birthday, password ) VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
+        conn.commit()
 
+        cur.execute(f"""SELECT * FROM users where name='{name}' """)
+        user = cur.fetchone()
+        return {'id': user['id'], 'name': user['name'], 'success': True}
 def get_user_info ():
     cur = conn.cursor()
     # Select all products from the table
-    cur.execute('''SELECT * FROM Users ''')
+    cur.execute('''SELECT * FROM users ''')
 
     # Fetch the data
     info = cur.fetchall()
