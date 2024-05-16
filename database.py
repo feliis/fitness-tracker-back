@@ -61,7 +61,6 @@ def new_user(conn):
 def valedate_user(name,password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(f"""SELECT * FROM Users where name='{name}' """)
-    user = cur.fetchone()
     print(user['password'])
     if user and user['password'] == password:
         return {'id': user['id'], 'name':user['name'], 'success':True}
