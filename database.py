@@ -24,8 +24,8 @@ def init_tables():
             IF NOT EXISTS Users(
                 id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
                 name VARCHAR NOT NULL,
-                age INTEGER NOT NULL,
-                gender VARCHAR NOT NULL,
+                birthday INTEGER NOT NULL,
+                sex VARCHAR NOT NULL,
                 password varchar NOT NULL
             );
             CREATE TABLE 
@@ -58,7 +58,7 @@ def new_user(conn):
     cur = conn.cursor()
 
 
-def valedate_user(name,password):
+def valedate_user(name, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(f"""SELECT * FROM Users where name='{name}' """)
     print(user['password'])
@@ -67,6 +67,10 @@ def valedate_user(name,password):
     else:
         return {'success':False}
 
+def create_user(name, sex, birthday, password):
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(f"""INSERT into Users VALUES ('{name}, {sex}, {birthday}, {password}')""")
+    return {'id': user['id'], 'name':user['name'], 'success':True}
 
 def get_user_info ():
     cur = conn.cursor()
