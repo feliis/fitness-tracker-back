@@ -1,6 +1,4 @@
-import sqlite3
 import psycopg2
-from utils import dict_factory
 import os
 from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
@@ -17,6 +15,7 @@ conn = psycopg2.connect(
 
 )
 
+
 def init_tables():
     cur = conn.cursor()
     cur.execute(
@@ -24,9 +23,11 @@ def init_tables():
             IF NOT EXISTS Users(
                 id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
                 name VARCHAR NOT NULL,
-                birthday INTEGER NOT NULL,
+                password VARCHAR NOT NULL,
+                birthday DATE NOT NULL,
                 sex VARCHAR NOT NULL,
-                password varchar NOT NULL
+                height REAL NOT NULL,
+                weight REAL NOT NULL
             );
             CREATE TABLE 
                 IF NOT EXISTS Goals(
@@ -43,9 +44,10 @@ def init_tables():
                     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
                     user_id uuid NOT NULL,
                     steps INTEGER NOT NULL,
-                    dist DECIMAL(8,2) NOT NULL,
-                    speed DECIMAL(8,1) NOT NULL,
-                    cal DECIMAL(8) NOT NULL,
+                    dist REAL NOT NULL,
+                    speed REAL NOT NULL,
+                    pace REAL NOT NULL,
+                    cal REAL NOT NULL,
                     time TIME NOT NULL ,
                     FOREIGN KEY (user_id)
                         REFERENCES users (id) 
@@ -81,19 +83,20 @@ def create_user(name, sex, birthday, password):
         cur.execute(f"""SELECT * FROM users where name='{name}' """)
         user = cur.fetchone()
         return {'id': user['id'], 'name': user['name'], 'success': True}
-def get_user_info ():
-    cur = conn.cursor()
+
+
+def get_user_info (id):
+    cur = conn.cursor(cursor_factory=RealDictCursor)
     # Select all products from the table
-    cur.execute('''SELECT * FROM users ''')
+    cur.execute(f"""SELECT * FROM users where id = '{id}' """)
 
     # Fetch the data
-    info = cur.fetchall()
-
+    info = cur.fetchone()
+    print(info)
     cur.close()
-    conn.close()
 
     return info
 
 if __name__ == "__main__":
     init_tables()
-    print(get_user_info())
+    #print(get_user_info())

@@ -7,10 +7,14 @@ app = Flask(__name__)
 app.config['CORS_HEADERS'] = 'Content-Type'
 cors = CORS(app, resources={r"/": {"origins": "https://04b7-178-178-92-202.ngrok-free.app"}})
 api = Api(app)
-@app.route('/main', methods=['GET'])
+
+
+@app.route('/profile', methods=['GET'])
 @cross_origin(origin='https://04b7-178-178-92-202.ngrok-free.app', headers=['Content-Type', 'Authorization'])
 def get():
-    return get_user_info(), 200
+    user = request.args.get('id')
+    print(user)
+    return get_user_info(user), 200
 
 @app.route('/login', methods=['POST'])
 @cross_origin(origin='https://04b7-178-178-92-202.ngrok-free.app', headers=['Content-Type', 'Authorization'])
@@ -28,11 +32,11 @@ def login():
 @cross_origin(origin='https://04b7-178-178-92-202.ngrok-free.app', headers=['Content-Type', 'Authorization'])
 def signup():
     print(request.json)
-    namea = request.json['name']
+    name = request.json['name']
     sex = request.json['sex']
     birthday = request.json['birthday']
     password = request.json['password']
-    response = jsonify(create_user(namea,sex,birthday,password))
+    response = jsonify(create_user(name,sex,birthday,password))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'POST'
