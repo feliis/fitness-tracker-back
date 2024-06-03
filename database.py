@@ -1,5 +1,6 @@
-import psycopg2
 import os
+
+import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
 
@@ -40,15 +41,15 @@ def init_tables():
                         REFERENCES users (id) 
                 );
             CREATE TABLE 
-                IF NOT EXISTS Activity(
+                IF NOT EXISTS Workout(
                     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
                     user_id uuid NOT NULL,
                     steps INTEGER NOT NULL,
-                    dist REAL NOT NULL,
+                    distance REAL NOT NULL,
                     speed REAL NOT NULL,
                     pace REAL NOT NULL,
-                    cal REAL NOT NULL,
-                    time TIME NOT NULL ,
+                    calories INTEGER NOT NULL,
+                    duration VARCHAR NOT NULL ,
                     FOREIGN KEY (user_id)
                         REFERENCES users (id) 
                 );
@@ -77,7 +78,7 @@ def create_user(name, sex, birthday, password):
         return {'success':False}
     else :
         cur.execute(
-            f"""INSERT into Users (name, sex, birthday, password ) VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
+            f"""INSERT into Users (name, sex, birthday, password) VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
         conn.commit()
 
         cur.execute(f"""SELECT * FROM users where name='{name}' """)
@@ -87,15 +88,31 @@ def create_user(name, sex, birthday, password):
 
 def get_user_info (id):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    # Select all products from the table
     cur.execute(f"""SELECT * FROM users where id = '{id}' """)
-
-    # Fetch the data
     info = cur.fetchone()
     print(info)
     cur.close()
-
     return info
+
+def create_workout(user_id, steps, distance, speed, pace, calories, duration):
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(
+            f"""INSERT into Workout (user_id, steps, distance, speed, pace, calories, duration) VALUES 
+            ('{user_id}', '{steps}', '{distance}', '{speed}', '{pace}', '{calories}', '{duration}')""")
+    conn.commit()
+    
+    # cur.execute(f"""SELECT * FROM workout where user_id='{user_id}' """)
+    # workout = cur.fetchall()
+    # return [{'user_id': workout['user_id'], 'steps': workout['steps'], 'distance': workout['distance'], 'speed': workout['speed'], 'pace': workout['pace'],
+    #         'calories': workout['calories'], 'duration': workout['duration']}]
+
+def get_workout_info(id):
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(f"""SELECT * FROM workout where user_id = '{id}' """)
+    workout = cur.fetchall()
+    print(workout)
+    cur.close()
+    return {"rows": workout}
 
 if __name__ == "__main__":
     init_tables()
