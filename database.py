@@ -23,10 +23,10 @@ def init_tables():
         '''CREATE TABLE 
             IF NOT EXISTS Users(
                 id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
-                name VARCHAR NOT NULL,
+                username VARCHAR NOT NULL,
                 password VARCHAR NOT NULL,
                 birthday DATE NOT NULL,
-                sex VARCHAR NOT NULL,
+                sex BOOLEAN NOT NULL,
                 height REAL NOT NULL,
                 weight REAL NOT NULL
             );
