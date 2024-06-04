@@ -23,6 +23,8 @@ def init_tables():
         '''CREATE TABLE 
             IF NOT EXISTS Users(
                 id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+                name VARCHAR NOT NULL,
+                lastname VARCHAR NOT NULL,
                 username VARCHAR NOT NULL,
                 password VARCHAR NOT NULL,
                 birthday DATE NOT NULL,
@@ -61,29 +63,30 @@ def new_user(conn):
     cur = conn.cursor()
 
 
-def valedate_user(name, password):
+def valedate_user(username, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""SELECT * FROM Users where name='{name}' """)
+    cur.execute(f"""SELECT * FROM Users where username='{username}' """)
     user = cur.fetchone()
     if user and user['password'] == password:
-        return {'id': user['id'], 'name':user['name'], 'success':True}
+        return {'id': user['id'], 'username':user['username'], 'success':True}
     else:
         return {'success':False}
 
-def create_user(name, sex, birthday, password):
+def create_user(name, lastname, username, sex, birthday, height, weight, password):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""SELECT * FROM Users where name='{name}' """)
+    cur.execute(f"""SELECT * FROM Users where username='{username}' """)
     user = cur.fetchone()
     if user:
         return {'success':False}
     else :
         cur.execute(
-            f"""INSERT into Users (name, sex, birthday, password) VALUES ('{name}', '{sex}', '{birthday}', '{password}')""")
+            f"""INSERT into Users (name, lastname, username, sex, birthday, height, weight, password) 
+                VALUES ('{name}','{lastname}','{username}', '{sex}', '{birthday}','{height}','{weight}', '{password}')""")
         conn.commit()
 
-        cur.execute(f"""SELECT * FROM users where name='{name}' """)
+        cur.execute(f"""SELECT * FROM users where username='{username}' """)
         user = cur.fetchone()
-        return {'id': user['id'], 'name': user['name'], 'success': True}
+        return {'id': user['id'], 'username': user['username'], 'success': True}
 
 
 def get_user_info (id):

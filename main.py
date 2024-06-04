@@ -34,10 +34,14 @@ def login():
 def signup():
     print(request.json)
     name = request.json['name']
+    lastname = request.json['lastname']
+    username = request.json['username']
     sex = request.json['sex']
     birthday = request.json['birthday']
+    height = request.json['height']
+    weight = request.json['weight']
     password = request.json['password']
-    response = jsonify(create_user(name,sex,birthday,password))
+    response = jsonify(create_user(name,lastname,username,sex,birthday,height,weight,password))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'POST'
