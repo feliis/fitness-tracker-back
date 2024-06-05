@@ -1,5 +1,6 @@
-import os
 import json
+import os
+
 import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
@@ -51,9 +52,9 @@ def init_tables():
                     speed REAL NOT NULL,
                     pace REAL NOT NULL,
                     calories INTEGER NOT NULL,
-                    duration TIME WITH TIME ZONE NOT NULL ,
-                    date_start DATETIME NOT NULL,
-                    date_stop DATETIME NOT NULL,
+                    duration TIME WITHOUT TIME ZONE NOT NULL ,
+                    date_start TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    date_stop TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                     FOREIGN KEY (user_id)
                         REFERENCES users (id) 
                 );
