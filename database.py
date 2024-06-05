@@ -1,5 +1,5 @@
 import os
-
+import json
 import psycopg2
 from dotenv import load_dotenv
 from psycopg2.extras import RealDictCursor
@@ -51,7 +51,9 @@ def init_tables():
                     speed REAL NOT NULL,
                     pace REAL NOT NULL,
                     calories INTEGER NOT NULL,
-                    duration VARCHAR NOT NULL ,
+                    duration TIME WITH TIME ZONE NOT NULL ,
+                    date_start DATETIME NOT NULL,
+                    date_stop DATETIME NOT NULL,
                     FOREIGN KEY (user_id)
                         REFERENCES users (id) 
                 );
@@ -97,25 +99,32 @@ def get_user_info (id):
     cur.close()
     return info
 
-def create_workout(user_id, steps, distance, speed, pace, calories, duration):
+def create_workout(user_id, steps, distance, speed, pace, calories, duration, date_start, date_stop):
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
-            f"""INSERT into Workout (user_id, steps, distance, speed, pace, calories, duration) VALUES 
-            ('{user_id}', '{steps}', '{distance}', '{speed}', '{pace}', '{calories}', '{duration}')""")
+            f"""INSERT into Workout (user_id, steps, distance, speed, pace, calories, duration, date_start, date_stop) VALUES 
+            ('{user_id}', '{steps}', '{distance}', '{speed}', '{pace}', '{calories}', '{duration}','{date_start}','{date_stop}')""")
     conn.commit()
     
-    # cur.execute(f"""SELECT * FROM workout where user_id='{user_id}' """)
-    # workout = cur.fetchall()
-    # return [{'user_id': workout['user_id'], 'steps': workout['steps'], 'distance': workout['distance'], 'speed': workout['speed'], 'pace': workout['pace'],
-    #         'calories': workout['calories'], 'duration': workout['duration']}]
+
+def get_workouts(id):
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(f"""SELECT * FROM workout where user_id = '{id}' """)
+    workouts = cur.fetchall()
+    print(workouts)
+    cur.close()
+    workouts = [dict(w) for w in workouts ]
+    j = {"rows": workouts }
+    print(j)
+    return json.dumps(j, indent=4, sort_keys=True, default=str)
 
 def get_workout_info(id):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""SELECT * FROM workout where user_id = '{id}' """)
-    workout = cur.fetchall()
+    cur.execute(f"""SELECT * FROM workout where id = '{id}' """)
+    workout = cur.fetchone()
     print(workout)
     cur.close()
-    return {"rows": workout}
+    return json.dumps(workout, indent=4, sort_keys=True, default=str)
 
 if __name__ == "__main__":
     init_tables()
