@@ -52,6 +52,7 @@ def signup():
 def add_workout():
     print(request.json)
     user_id = request.json['user_id']
+    type_activity = request.json['type_activity']
     steps = request.json['steps']
     distance = request.json['distance']
     speed = request.json['speed']
@@ -60,7 +61,8 @@ def add_workout():
     duration = request.json['duration']
     date_start = request.json['date_start']
     date_stop = request.json['date_stop']
-    response = jsonify(create_workout(user_id, steps, distance, speed, pace, calories, duration, date_start, date_stop))
+    coordinates = request.json['coordinates']
+    response = jsonify(create_workout(user_id, type_activity, steps, distance, speed, pace, calories, duration, date_start, date_stop,coordinates))
     response.headers['Access-Control-Allow-Origin'] = '*'
     response.headers['Access-Control-Allow-Headers'] = 'Content-Type'
     response.headers['Access-Control-Allow-Methods'] = 'POST'
@@ -79,6 +81,10 @@ def workout_info():
     print(workout_id)
     return get_workout_info(workout_id), 200
 
+@app.route('/activities', methods=['GET'])
+@cross_origin(origin='https://04b7-178-178-92-202.ngrok-free.app', headers=['Content-Type', 'Authorization'])
+def activities():
+    return get_activities(), 200
 
 if __name__ == '__main__':
     app.run(debug=True)

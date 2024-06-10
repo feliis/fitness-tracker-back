@@ -47,6 +47,7 @@ def init_tables():
                 IF NOT EXISTS Workout(
                     id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
                     user_id uuid NOT NULL,
+                    type_activity uuid NOT NULL,
                     steps INTEGER NOT NULL,
                     distance REAL NOT NULL,
                     speed REAL NOT NULL,
@@ -55,8 +56,17 @@ def init_tables():
                     duration TIME WITHOUT TIME ZONE NOT NULL ,
                     date_start TIMESTAMP WITHOUT TIME ZONE NOT NULL,
                     date_stop TIMESTAMP WITHOUT TIME ZONE NOT NULL,
+                    coordinates JSONB NOT NULL,
                     FOREIGN KEY (user_id)
-                        REFERENCES users (id) 
+                        REFERENCES users (id),
+                    FOREIGN KEY (type_activity)
+                        REFERENCES activity (id)
+                );
+            CREATE TABLE 
+                IF NOT EXISTS Activity(
+                    id uuid DEFAULT gen_random_uuid() PRIMARY KEY,
+                    name VARCHAR NOT NULL,
+                    met REAL NOT NULL
                 );
         '''
     )
@@ -100,17 +110,16 @@ def get_user_info (id):
     cur.close()
     return info
 
-def create_workout(user_id, steps, distance, speed, pace, calories, duration, date_start, date_stop):
+def create_workout(user_id, type_activity, steps, distance, speed, pace, calories, duration, date_start, date_stop, coordinates):
     cur = conn.cursor(cursor_factory=RealDictCursor)
     cur.execute(
-            f"""INSERT into Workout (user_id, steps, distance, speed, pace, calories, duration, date_start, date_stop) VALUES 
-            ('{user_id}', '{steps}', '{distance}', '{speed}', '{pace}', '{calories}', '{duration}','{date_start}','{date_stop}')""")
+            f"""INSERT into Workout (user_id, type_activity, steps, distance, speed, pace, calories, duration, date_start, date_stop,coordinates) VALUES 
+            ('{user_id}', '{type_activity}', '{steps}', '{distance}', '{speed}', '{pace}', '{calories}', '{duration}','{date_start}','{date_stop}', '{json.dumps(coordinates)}')""")
     conn.commit()
-    
 
 def get_workouts(id):
     cur = conn.cursor(cursor_factory=RealDictCursor)
-    cur.execute(f"""SELECT * FROM workout where user_id = '{id}' """)
+    cur.execute(f"""SELECT * FROM workout WHERE user_id = '{id}' ORDER BY DATE(date_start) DESC;""")
     workouts = cur.fetchall()
     print(workouts)
     cur.close()
@@ -126,6 +135,14 @@ def get_workout_info(id):
     print(workout)
     cur.close()
     return json.dumps(workout, indent=4, sort_keys=True, default=str)
+
+def get_activities():
+    cur = conn.cursor(cursor_factory=RealDictCursor)
+    cur.execute(f"""SELECT * FROM activity""")
+    data = cur.fetchall()
+    print(data)
+    cur.close()
+    return data
 
 if __name__ == "__main__":
     init_tables()
